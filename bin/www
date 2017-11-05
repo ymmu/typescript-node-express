@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
+// bin/www : Express + Node.js 설정파일
+
 //module dependencies
 var server = require("../dist/server");
 var debug = require("debug")("funwork-api:server");
@@ -22,9 +24,12 @@ httpServer.on("error", onError);
 httpServer.on("listening", onListening);
 
 
-/**
- * Normalize a port into a number, string, or false.
- */
+/*
+  Normalize a port into a number, string, or false.
+  normalizePort() 는 받아드리는 포트를 설정 한다.
+  process.env.PORT 설정에 설정 되어있지 않다면 디폴트로 8080 을 사용한다.
+*/
+
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -41,8 +46,9 @@ function normalizePort(val) {
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
+/*
+  Event listener for HTTP server "error" event.
+  onError() : 잡히지 않은 예외가 던져질때 호출되는 함수
  */
 function onError(error) {
   if (error.syscall !== "listen") {
@@ -68,8 +74,9 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
+/*
+  Event listener for HTTP server "listening" event.
+  onListening()은 서버가 성공적으로 시작되면 한번만 호출된다.
  */
 function onListening() {
   var addr = httpServer.address();
