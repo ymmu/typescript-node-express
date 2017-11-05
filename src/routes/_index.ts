@@ -1,6 +1,8 @@
 import {Express, Request, Response} from 'express';
 import * as EmployeeRoute from './employee.routes';
 import * as TeamRoute from './team.routes';
+import * as PostRoute from './post.routes';
+import * as CommentRoute from './comment.routes';
 
 export function initRoutes(app: Express) {
 
@@ -13,4 +15,6 @@ export function initRoutes(app: Express) {
   // Routes 정의
   EmployeeRoute.routes(app);
   TeamRoute.routes(app);
+  PostRoute.routes(app);
+  CommentRoute.routes(app);
 }

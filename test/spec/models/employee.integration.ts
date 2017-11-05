@@ -1,17 +1,18 @@
 import {expect} from "chai";
 import {sequelize} from "../../../src/models/index";
 import Employee from "../../../src/models/domain/employee";
-import Team from '../../../src/models/domain/team';
-
+import Post from '../../../src/models/domain/post';
+import Comment from '../../../src/models/domain/comment';
 
 describe("[Integration] 직원 모델을 테스트 한다", () => {
   before((done: Function) => {
-    sequelize.sync().then(() => {
+    sequelize.sync({force: true}).then(() => {
       done();
     }).catch((error: Error) => {
       done(error);
     });
   });
+
 
   const cleanUp = (cb) => Employee.destroy({where: {}, truncate: true}).then(() => cb());
 
@@ -28,7 +29,6 @@ describe("[Integration] 직원 모델을 테스트 한다", () => {
   };
 
   it('직원을 등록할 때 등록한 값이 리턴된다', (done: Function) => {
-
     // given
     let givenEmployee = {name: 'test', address: 'jeju'};
 
@@ -71,20 +71,20 @@ describe("[Integration] 직원 모델을 테스트 한다", () => {
   });
 
   it('apple, go 라는 직원 중에 apple 직원을 검색하는 경우 apple 직원의 정보가 리턴된다', (done: Function) => {
-
+    // given
     const apple = {name: 'apple', address: 'jeju'};
     const go = {name: 'go', address: 'jeju'};
 
-    // when
+    // when & then
     save(apple, () => {
       save(go, () => {
-        Employee.findOne<Employee>({where: {name: 'apple'}}).then((employee: Employee) => {
-          expect(employee.get('name')).to.be.eql(apple.name);
-          done();
-        });
+        Employee.findOne<Employee>({where: {name: 'apple'}})
+          .then((employee: Employee) => {
+            expect(employee.get('name')).to.be.eql(apple.name);
+            done();
+          });
       });
     });
   });
 
-
- });
+});

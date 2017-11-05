@@ -1,12 +1,17 @@
-import {Column, HasMany, Model, Table} from 'sequelize-typescript';
+import {Column, HasMany, Model, Table,PrimaryKey,AutoIncrement} from 'sequelize-typescript';
 import Employee from './employee';
 
 @Table
 export default class Team extends Model<Team> {
 
-  @Column
-  name: string;
+// @AutoIncrement
+// @PrimaryKey
+// @Column
+// Id: number;
 
-  @HasMany(() => Employee)
-  employees: Employee[];
+@Column
+name: string;
+
+@HasMany(() => Employee)
+employees: Employee[];
 }
