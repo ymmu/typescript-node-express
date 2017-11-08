@@ -1,4 +1,4 @@
-import {Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, ForeignKey} from 'sequelize-typescript';
+import {Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, ForeignKey,HasMany} from 'sequelize-typescript';
 import Employee from './employee';
 import Post from './post';
 
@@ -23,7 +23,9 @@ export default class Comment extends Model<Comment> {
   postId: number;
 
   @ForeignKey(() => Comment)
-  @AllowNull
   @Column
-  commentId: number;
+  parentId: number;
+
+  @HasMany(() => Comment)
+  childId: Comment[];
 }

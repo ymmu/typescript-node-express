@@ -4,10 +4,10 @@ import Employee from './employee';
 @Table
 export default class Post extends Model<Post> {
 
-  // @AutoIncrement
-  // @PrimaryKey
-  // @Column
-  // id: number;
+  @AutoIncrement
+  @PrimaryKey
+  @Column
+  id: number;
 
   @Column
   title: string;

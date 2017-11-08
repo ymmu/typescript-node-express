@@ -1,13 +1,13 @@
-import { Table, Column, Model, CreatedAt, UpdatedAt} from 'sequelize-typescript';
+import { Table, Column, Model, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement} from 'sequelize-typescript';
 // import Team from './team';
 
 @Table
 export default class Employee extends Model<Employee> {
 
-  // @AutoIncrement
-  // @PrimaryKey
-  // @Column
-  // Id: number;
+  @AutoIncrement
+  @PrimaryKey
+  @Column
+  id: number;
 
   @Column
   name: string;
