@@ -24,11 +24,13 @@ export default class Comment extends Model<Comment> {
   @Column
   postId: number;
 
-
-  @BelongsTo(() => Comment)
+  @ForeignKey(() => Comment)
   @Column
   parentId: number;
 
+  @BelongsTo(() => Comment)
+  comment: Comment;
+
   @HasMany(() => Comment)
-  childId: Comment[];
+  reComments: Comment[];
 }
