@@ -13,7 +13,7 @@ class DatabaseConfig {
     const sequelize = new Sequelize({
       ...new DataSource().getConfig
     });
-    sequelize.addModels([Employee,Post, Comment]);
+    sequelize.addModels([Employee,Post, Comment, Team]);
     this._sequelize = sequelize;
   }
 

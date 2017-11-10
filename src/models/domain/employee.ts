@@ -1,13 +1,9 @@
-import { Table, Column, Model, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement} from 'sequelize-typescript';
-// import Team from './team';
+import { Table, Column, Model, CreatedAt, UpdatedAt, ForeignKey, HasMany} from 'sequelize-typescript';
+import Team from './team';
+import Post from './post';
 
 @Table
 export default class Employee extends Model<Employee> {
-
-  @AutoIncrement
-  @PrimaryKey
-  @Column
-  id: number;
 
   @Column
   name: string;
@@ -21,7 +17,10 @@ export default class Employee extends Model<Employee> {
   @UpdatedAt
   updatedAt: Date;
 
-  // @ForeignKey(() => Team)
-  // @Column
-  // teamId: number;
+  @ForeignKey(() => Team)
+  @Column
+  teamId: number;
+
+  @HasMany(() => Post)
+  posts: Post[];
 }

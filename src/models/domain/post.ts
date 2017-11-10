@@ -1,13 +1,9 @@
-import {Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, ForeignKey, PrimaryKey, AutoIncrement} from 'sequelize-typescript';
+import {Table, Column, Model, CreatedAt, UpdatedAt, ForeignKey, HasMany} from 'sequelize-typescript';
 import Employee from './employee';
+import Comment from './comment';
 
 @Table
 export default class Post extends Model<Post> {
-
-  @AutoIncrement
-  @PrimaryKey
-  @Column
-  id: number;
 
   @Column
   title: string;
@@ -24,4 +20,7 @@ export default class Post extends Model<Post> {
   @ForeignKey(() => Employee)
   @Column
   userId: number;
+
+  @HasMany(() => Comment)
+  comment: Comment[];
 }
