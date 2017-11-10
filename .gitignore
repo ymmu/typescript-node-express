@@ -1,8 +1,0 @@
-node_modules
-dist
-dist_test
-.idea
-src/server.js.map
-src/**/*.js*
-test/**/*.js*
-*.DS_Store
