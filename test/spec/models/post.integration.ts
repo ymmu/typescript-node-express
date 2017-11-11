@@ -23,15 +23,22 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
       // 테스트 데이터 생성 [Team, Employee]
       .then(() =>{
-        const it_department = new Team({name: 'it'});
-        const employee = new Employee({name: 'test', address: 'jeju'});
-        it_department.save().then((savedTeam: Team) => {
-          employee.save().then((user: Employee) => {
-            savedTeam.$add('employee', user);
-            done();
+        Team.create({name: 'it'})
+          .then(() => {
+            Team.findOne<Team>({where:{name:'it'}})
+              .then((it_dept:Team)=>{
+                Employee.create(
+                  {name: 'test01', address: 'jeju', teamId: it_dept.get('id')}
+                ).then(() => {
+                  Employee.findOne<Employee>({where:{name:'test01'}})
+                    .then((employee: Employee) =>{
+                      it_dept.$add('employee', employee);
+                      done();
+                    });
+                });
+              });
           });
-        });
-      },()=>{console.log("error: employee.save");});
+      },() => {console.log("fail: 테스트 데이터 생성");});
   });
 
   const savePost = (given, cb) => {
@@ -44,7 +51,7 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
   it('게시글을 등록할 때 등록한 값이 리턴된다', (done: Function) => {
     // given
-    Employee.findOne<Employee>({where: {name: 'test'}})
+    Employee.findOne<Employee>({where: {name: 'test01'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.get('id')};
 
@@ -61,7 +68,7 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
   it('직원"test"가 작성한 게시글만 조회할 때 해당 직원의 게시글만 조회된다', (done: Function) => {
     // given
-    Employee.findOne<Employee>({where: {name: 'test'}})
+    Employee.findOne<Employee>({where: {name: 'test01'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.get('id')};
 
@@ -77,7 +84,7 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
   it('"게시글"이라는 키워드를 조회할 때 키워드를 포함한 게시글이 조회된다', (done: Function) => {
     // given
-    Employee.findOne<Employee>({where: {name: 'test'}})
+    Employee.findOne<Employee>({where: {name: 'test01'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
 
@@ -99,7 +106,7 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
   it('조회한 게시글을 수정할 때 수정된 값이 리턴된다', (done: Function) => {
     // given
-    Employee.findOne<Employee>({where: {name: 'test'}})
+    Employee.findOne<Employee>({where: {name: 'test01'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
 
@@ -125,7 +132,7 @@ describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
 
   it('조회한 게시글을 삭제하면 리턴된 값이 없다', (done: Function) => {
     // given
-    Employee.findOne<Employee>({where: {name: 'test'}})
+    Employee.findOne<Employee>({where: {name: 'test01'}})
       .then((employee: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: employee.id};
 
