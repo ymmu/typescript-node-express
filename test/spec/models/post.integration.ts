@@ -1,10 +1,11 @@
 import {expect} from "chai";
 import {sequelize} from "../../../src/models/index";
 import Employee from "../../../src/models/domain/employee";
+import Team from '../../../src/models/domain/team';
 import Post from '../../../src/models/domain/post';
 import Comment from '../../../src/models/domain/comment';
 
-describe("[Integration] 게시글 모델을 테스트 한다", () => {
+describe("[Integration] 게시글 모델을 테스트 한다: ", () => {
   before((done: Function) => {
     sequelize.sync().then(() => {
       done();
@@ -13,16 +14,25 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
     });
   });
 
-
-  const cleanUp = (cb) => Post.destroy({where: {}, truncate: true})
-    .then(() => Comment.destroy({where: {}, truncate: true})
-      .then(() => Employee.destroy({where: {}, truncate: true})
-        .then(() => cb())));
-
   beforeEach((done: Function) => {
-    cleanUp(() => done());
-  });
+    Comment.destroy({where: {}, truncate: true})
+      .then(() => Post.destroy({where: {}, truncate: true}))
+      .then(() => Employee.destroy({where: {}, truncate: true}))
+      .then(() => Team.destroy({where: {}, truncate: true}))
+      .catch(() =>{ console.log("failed cleanUp"); })
 
+      // 테스트 데이터 생성 [Team, Employee]
+      .then(() =>{
+        const it_department = new Team({name: 'it'});
+        const employee = new Employee({name: 'test', address: 'jeju'});
+        it_department.save().then((savedTeam: Team) => {
+          employee.save().then((user: Employee) => {
+            savedTeam.$add('employee', user);
+            done();
+          });
+        });
+      },()=>{console.log("error: employee.save");});
+  });
 
   const savePost = (given, cb) => {
     const post = new Post(given);
@@ -32,14 +42,11 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
       });
   };
 
-
   it('게시글을 등록할 때 등록한 값이 리턴된다', (done: Function) => {
     // given
-    let employee = new Employee({name: 'test', address: 'jeju'});
-    employee.save();
     Employee.findOne<Employee>({where: {name: 'test'}})
       .then((writer: Employee) => {
-        let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
+        let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.get('id')};
 
         // when & then
         savePost(givenPost, (savedPost: Post) => {
@@ -54,11 +61,9 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
 
   it('직원"test"가 작성한 게시글만 조회할 때 해당 직원의 게시글만 조회된다', (done: Function) => {
     // given
-    let employee = new Employee({name: 'test', address: 'jeju'});
-    employee.save();
     Employee.findOne<Employee>({where: {name: 'test'}})
       .then((writer: Employee) => {
-        let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
+        let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.get('id')};
 
         // when & then
         savePost(givenPost, (savedPost: Post) => {
@@ -72,8 +77,6 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
 
   it('"게시글"이라는 키워드를 조회할 때 키워드를 포함한 게시글이 조회된다', (done: Function) => {
     // given
-    let employee = new Employee({name: 'test', address: 'jeju'});
-    employee.save();
     Employee.findOne<Employee>({where: {name: 'test'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
@@ -84,18 +87,18 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
             where: {$or: [
               { title: {$like: '%게시글%'}},
               { content: {$like: '%게시글%'}}
-            ]}}).then((posts: Post[])=> {
-              expect(posts.length).to.be.eql(1);
-              done();
-            });
+            ]}
+          })
+          .then((posts: Post[])=> {
+            expect(posts.length).to.be.eql(1);
+            done();
+          });
         });
       });
   });
 
   it('조회한 게시글을 수정할 때 수정된 값이 리턴된다', (done: Function) => {
     // given
-    let employee = new Employee({name: 'test', address: 'jeju'});
-    employee.save();
     Employee.findOne<Employee>({where: {name: 'test'}})
       .then((writer: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: writer.id};
@@ -107,7 +110,8 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
           savedPost.update({
             title: '게시글 수정 테스트',
             content: '게시글을 수정합니다'
-          }).then((updatedPost: Post) => {
+          })
+          .then((updatedPost: Post) => {
             expect(updatedPost.get('title')).to.be.eql(savedPost.title);
             expect(updatedPost.get('content')).to.be.eql(savedPost.content);
             // writer.$get('post').then((posts:Post[]) => {
@@ -121,22 +125,20 @@ describe("[Integration] 게시글 모델을 테스트 한다", () => {
 
   it('조회한 게시글을 삭제하면 리턴된 값이 없다', (done: Function) => {
     // given
-    let employee = new Employee({name: 'test', address: 'jeju'});
-    employee.save();
     Employee.findOne<Employee>({where: {name: 'test'}})
       .then((employee: Employee) => {
         let givenPost= {title: '게시글 테스트.', content: '게시글을 등록합니다.', userId: employee.id};
 
         // when & then
         savePost(givenPost, (savedPost: Post) => {
-          savedPost.destroy().then(()=>{
-            Post.findAll<Post>().then((posts: Post[])=> {
-              expect(posts.length).to.be.eql(0);
-              done();
+          savedPost.destroy()
+            .then(()=>{ Post.findAll<Post>()
+              .then((posts: Post[])=> {
+                expect(posts.length).to.be.eql(0);
+                done();
+              });
             });
-          });
         });
       });
   });
-
 });
