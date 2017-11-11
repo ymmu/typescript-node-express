@@ -83,7 +83,7 @@ describe("[Integration] 직원 모델을 테스트 한다", () => {
     });
   });
 
-  it('it라는 부서에 apple유저를 등록한다', (done: Function) => {
+  it('it라는 부서에 apple 유저를 등록한다', (done: Function) => {
     // given
     const it_department = new Team({name: 'it'});
     const apple = new Employee({name: 'apple', address: 'jeju'});
@@ -92,6 +92,7 @@ describe("[Integration] 직원 모델을 테스트 한다", () => {
         apple.save().then((user: Employee) => {
           savedTeam.$add('employee', user);
 
+          // Eager loading - ({include: [Employee]}) 조인쿼리를 이용해 관계데이터까지 한번에 불러온다
           Team.findAll<Team>({include: [Employee]}).then((teams: Team[]) => {
             const team = teams[0];
             expect(team.employees.length).to.be.eql(1);
