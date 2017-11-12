@@ -22,5 +22,5 @@ export default class Post extends Model<Post> {
   userId: number;
 
   @HasMany(() => Comment)
-  comment: Comment[];
+  comments: Comment[];
 }
