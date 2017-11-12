@@ -1,6 +1,7 @@
 import { Table, Column, Model, CreatedAt, UpdatedAt, ForeignKey, HasMany} from 'sequelize-typescript';
 import Team from './team';
 import Post from './post';
+import Comment from './comment';
 
 @Table
 export default class Employee extends Model<Employee> {
@@ -23,4 +24,7 @@ export default class Employee extends Model<Employee> {
 
   @HasMany(() => Post)
   posts: Post[];
+
+  @HasMany(() => Comment)
+  comments: Comment[];
 }
