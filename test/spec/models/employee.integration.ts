@@ -12,18 +12,26 @@ describe("[Integration] 직원 모델을 테스트 한다", () => {
     });
   });
 
-  const cleanUp = (cb) => Employee.destroy({where: {}, truncate: true}).then(() => cb());
+  const cleanUpEmployee = () => Employee.destroy({where: {}, truncate: true});
+  const cleanUpTeam = () => Team.destroy({where: {}, truncate: true});
+  const cleanUp = () => Promise.all([cleanUpEmployee(),cleanUpTeam()]);
 
   beforeEach((done: Function) => {
-    cleanUp(() => done());
+    cleanUp().then(() => {
+      done();
+    });
   });
 
   const save = (given, cb) => {
-    const employee = new Employee(given);
-    employee.save()
-      .then((saveEmployee: Employee) => {
+    const team = new Team({name: 'it'});
+    const givenEmployee = new Employee(given);
+
+    team.save().then((team: Team) => {
+      givenEmployee.save().then((saveEmployee: Employee) => {
+        team.$add('employee', saveEmployee);
         cb(saveEmployee);
       });
+    });
   };
 
   it('직원을 등록할 때 등록한 값이 리턴된다', (done: Function) => {

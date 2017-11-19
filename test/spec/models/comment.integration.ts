@@ -18,12 +18,15 @@ describe("[Integration] 댓글 모델을 테스트 한다: ", () => {
   const cleanUpComment = () => Comment.destroy({where: {}, truncate: true});
   const cleanUpPost = () => Post.destroy({where: {}, truncate: true});
   const cleanUpEmployee = () => Employee.destroy({where: {}, truncate: true});
-  const cleanUpTeam= () =>Team.destroy({where: {}, truncate: true});
+  const cleanUpTeam = () => Team.destroy({where: {}, truncate: true});
+  const cleanUp = () => Promise.all([cleanUpComment(),cleanUpPost(),cleanUpEmployee(),cleanUpTeam()]);
 
   beforeEach((done: Function) => {
-    Promise.all([cleanUpComment(),cleanUpPost(),cleanUpEmployee(),cleanUpTeam()])
-      .then(()=>done());
+    cleanUp().then(() => {
+        done();
+    });
   });
+
 
   const saveComment = (given,cb) => {
     const team = new Team({name: 'it'});
